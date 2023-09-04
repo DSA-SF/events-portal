@@ -12,7 +12,7 @@ export const fetchEvents: () => Promise<(CalendarEvent & { source: 'google-calen
     throw new Error('The GOOGLE_CALENDAR_IDS environment variable is not set.');
   }
 
-  const eventFetchPromises = calendarIds.map((calendarId) => {
+  const eventFetchPromises = calendarIds.map((calendarId: string) => {
     return calendar.events.list({
       calendarId: calendarId.trim(),
       timeMin: sevenDaysAgo.toISOString(),

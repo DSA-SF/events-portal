@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UIPage from "../components/ui/page";
 import EventPrimaryFields from '../components/ui/EventPrimaryFields';
 import GoogleCalendarSection from '../components/ui/google-calendar/GoogleCalendarSection';
 import { fetchEvents } from '../utils/google-calendar/events';
 import { CalendarEvent } from "../model/event";
 import { DateTime } from 'luxon';
+import { CalendarDetails, fetchCalendarDetails } from '../utils/google-calendar/calendar';
 
 interface IndexProps {
   events: CalendarEvent[];
+  googleCalendarDetails: CalendarDetails[];
 }
 
-export default function Page({ events }: IndexProps) {
+export default function Page({ events, googleCalendarDetails }: IndexProps) {
   // State hooks for event primary fields
   const [eventName, setEventName] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(
@@ -49,6 +51,7 @@ export default function Page({ events }: IndexProps) {
           />
 
           <GoogleCalendarSection
+            calendarDetails={googleCalendarDetails}
             destinationCalendar={destinationCalendar}
             onDestinationCalendarChange={setDestinationCalendar}
             isActivated={isGoogleCalendarActivated}
@@ -65,10 +68,7 @@ export default function Page({ events }: IndexProps) {
 }
 
 export async function getServerSideProps() {
-  try {
-    const events = await fetchEvents();
-    return { props: { events } };
-  } catch (error) {
-    return { props: { events: [] } };
-  }
+  const events = await fetchEvents();
+  const googleCalendarDetails = await fetchCalendarDetails();
+  return { props: { events, googleCalendarDetails } };
 }

@@ -4,8 +4,10 @@ import { CalendarEvent } from "../../../model/event";
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { getColorForEvent, newEventColor } from '../colors';
+import { CalendarDetails } from '../../../utils/google-calendar/calendar';
 
 interface GoogleCalendarSectionProps {
+  calendarDetails: CalendarDetails[];
   destinationCalendar: 'Public' | 'Internal';
   onDestinationCalendarChange: (value: 'Public' | 'Internal') => void;
   isActivated: boolean;
@@ -17,6 +19,7 @@ interface GoogleCalendarSectionProps {
 }
 
 const GoogleCalendarSection: React.FC<GoogleCalendarSectionProps> = ({
+  calendarDetails,
   destinationCalendar,
   onDestinationCalendarChange,
   isActivated,
@@ -31,8 +34,9 @@ const GoogleCalendarSection: React.FC<GoogleCalendarSectionProps> = ({
   type DisplayableEvent = (Partial<CalendarEvent> & { source: 'draft' }) | (CalendarEvent & { source: 'google-calendar' });
   const allEvents =
     (draftIsDisplayable ? ([draftEvent] as Partial<CalendarEvent>[]).concat(existingEvents) : existingEvents) as DisplayableEvent[]
-  console.log(draftEvent)
-  console.log(allEvents)
+
+  console.log("calendarDetails", calendarDetails)
+
 
   return (
     <CollapsibleSection
@@ -49,8 +53,9 @@ const GoogleCalendarSection: React.FC<GoogleCalendarSectionProps> = ({
             onChange={(e) => onDestinationCalendarChange(e.target.value as 'Public' | 'Internal')}
             className="mt-1 p-2 border rounded-md flex-grow"
           >
-            <option value="Public">Public</option>
-            <option value="Internal">Internal</option>
+            {Object.values(calendarDetails).map(detail =>
+              <option key={detail.id} value={detail.id}>{detail.name}</option>
+            )}
           </select>
 
           <button
@@ -95,14 +100,6 @@ const GoogleCalendarSection: React.FC<GoogleCalendarSectionProps> = ({
               })}
           />
         </div>
-
-        <ul>
-          {allEvents.map((event, index) => (
-            <li key={index}>
-              {event.title} - {event.calendarName} - {event.startTime?.toLocaleString()} - {event.endTime?.toLocaleString()}
-            </li>
-          ))}
-        </ul>
       </div>
     </CollapsibleSection >
   );
