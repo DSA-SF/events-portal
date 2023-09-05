@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CollapsibleSection from '../CollapsibleSection';
-import { CalendarEvent } from "../../../model/event";
+import { CalendarEvent, CalendarableEvent, DraftEvent, GoogleCalendarEvent } from "../../../model/event";
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { getColorForEvent, newEventColor } from '../colors';
@@ -8,19 +8,19 @@ import { CalendarDetails } from '../../../utils/google-calendar/calendar';
 
 interface GoogleCalendarSectionProps {
   calendarDetails: CalendarDetails[];
-  destinationCalendar: 'Public' | 'Internal';
-  onDestinationCalendarChange: (value: 'Public' | 'Internal') => void;
+  destinationCalendarId?: string;
+  onDestinationCalendarChange: (value: string) => void;
   isActivated: boolean;
   onToggleActivation: () => void;
   additionalStyles?: string;
-  existingEvents: CalendarEvent[];
+  existingEvents: GoogleCalendarEvent[];
 
-  draftEvent?: Partial<CalendarEvent> & { source: 'draft' };
+  draftEvent?: DraftEvent;
 }
 
 const GoogleCalendarSection: React.FC<GoogleCalendarSectionProps> = ({
   calendarDetails,
-  destinationCalendar,
+  destinationCalendarId,
   onDestinationCalendarChange,
   isActivated,
   onToggleActivation,
@@ -30,13 +30,24 @@ const GoogleCalendarSection: React.FC<GoogleCalendarSectionProps> = ({
 }) => {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
-  const draftIsDisplayable = draftEvent && draftEvent.title && draftEvent.startTime && draftEvent.endTime;
-  type DisplayableEvent = (Partial<CalendarEvent> & { source: 'draft' }) | (CalendarEvent & { source: 'google-calendar' });
-  const allEvents =
-    (draftIsDisplayable ? ([draftEvent] as Partial<CalendarEvent>[]).concat(existingEvents) : existingEvents) as DisplayableEvent[]
 
-  console.log("calendarDetails", calendarDetails)
+  const renderEvents = existingEvents.map(event => ({
+    id: event.id,
+    start: event.startTime,
+    end: event.endTime,
+    title: event.title,
+    color: getColorForEvent('google-calendar', event.calendarId || 'default'),
+  }));
 
+  if (draftEvent && draftEvent.title && draftEvent.startTime && draftEvent.endTime) {
+    renderEvents.push({
+      id: 'DRAFT',
+      start: draftEvent.startTime,
+      end: draftEvent.endTime,
+      title: draftEvent.title,
+      color: newEventColor,
+    })
+  }
 
   return (
     <CollapsibleSection
@@ -49,7 +60,7 @@ const GoogleCalendarSection: React.FC<GoogleCalendarSectionProps> = ({
         <div className="mb-4 relative flex items-center">
           <label className="block text-sm font-medium text-gray-700 pr-2">Destination Calendar</label>
           <select
-            value={destinationCalendar}
+            value={destinationCalendarId}
             onChange={(e) => onDestinationCalendarChange(e.target.value as 'Public' | 'Internal')}
             className="mt-1 p-2 border rounded-md flex-grow"
           >
@@ -78,26 +89,12 @@ const GoogleCalendarSection: React.FC<GoogleCalendarSectionProps> = ({
           <FullCalendar
             plugins={[timeGridPlugin]}
             initialView="timeGridWeek"
-            events={allEvents}
+            events={renderEvents}
             allDaySlot={false}
             contentHeight={300}
             slotDuration="00:30:00"
             slotLabelInterval="01:00:00"
             scrollTime="12:00:00"
-            eventDataTransform={(eventData: DisplayableEvent) => (
-              eventData.source === 'draft' ? {
-                id: 'DRAFT',
-                start: eventData.startTime,
-                end: eventData.endTime,
-                title: eventData.title,
-                color: newEventColor,
-              } : {
-                id: eventData.id,
-                start: eventData.startTime,
-                end: eventData.endTime,
-                title: eventData.title,
-                color: getColorForEvent('google-calendar', eventData.calendarName),
-              })}
           />
         </div>
       </div>

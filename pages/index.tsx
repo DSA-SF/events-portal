@@ -3,17 +3,20 @@ import UIPage from "../components/ui/page";
 import EventPrimaryFields from '../components/ui/EventPrimaryFields';
 import GoogleCalendarSection from '../components/ui/google-calendar/GoogleCalendarSection';
 import { fetchEvents } from '../utils/google-calendar/events';
-import { CalendarEvent } from "../model/event";
+import { CalendarEvent, GoogleCalendarEvent } from "../model/event";
 import { DateTime } from 'luxon';
 import { CalendarDetails, fetchCalendarDetails } from '../utils/google-calendar/calendar';
+import { ZoomAccount, ZoomMeeting, getAllUserMeetings, getLicensedUsers } from '../utils/zoom';
+import ZoomSection from '../components/ui/zoom/ZoomSection';
 
 interface IndexProps {
-  events: CalendarEvent[];
+  googleCalendarEvents: GoogleCalendarEvent[];
   googleCalendarDetails: CalendarDetails[];
+  zoomAccounts: ZoomAccount[];
+  zoomMeetings: ZoomMeeting[];
 }
 
-export default function Page({ events, googleCalendarDetails }: IndexProps) {
-  // State hooks for event primary fields
+export default function Page({ googleCalendarEvents, googleCalendarDetails, zoomAccounts, zoomMeetings }: IndexProps) {
   const [eventName, setEventName] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(
     DateTime.now().plus({ days: 5 }).set({ hour: 18, minute: 0, second: 0 }).setZone('America/Los_Angeles').toJSDate()
@@ -22,8 +25,12 @@ export default function Page({ events, googleCalendarDetails }: IndexProps) {
   const [eventType, setEventType] = useState<'Online' | 'In-person' | 'Hybrid'>('Online');
   const [location, setLocation] = useState<string>('');
 
-  const [destinationCalendar, setDestinationCalendar] = useState<'Public' | 'Internal'>('Public');
-  const [isGoogleCalendarActivated, setIsGoogleCalendarActivated] = useState<boolean>(true);
+  const [destinationCalendar, setDestinationCalendar] = useState<string | undefined>();
+  const [isGoogleCalendarActivated, setIsGoogleCalendarActivated] = useState<boolean>(false /* true */);
+
+  const [destinationZoomAccountId, setDestinationZoomAccountId] = useState<string | undefined>();
+  const [isZoomActivated, setIsZoomActivated] = useState<boolean>(true);
+
 
   const draftEvent: Partial<CalendarEvent> & { source: 'draft' } = {
     title: eventName,
@@ -52,13 +59,24 @@ export default function Page({ events, googleCalendarDetails }: IndexProps) {
 
           <GoogleCalendarSection
             calendarDetails={googleCalendarDetails}
-            destinationCalendar={destinationCalendar}
+            destinationCalendarId={destinationCalendar}
             onDestinationCalendarChange={setDestinationCalendar}
             isActivated={isGoogleCalendarActivated}
             onToggleActivation={() => setIsGoogleCalendarActivated(prevState => !prevState)}
-            existingEvents={events}
+            existingEvents={googleCalendarEvents}
             draftEvent={draftEvent}
           />
+
+          <ZoomSection
+            accounts={zoomAccounts}
+            destinationAccountId={"abc"}
+            onDestinationAccountChange={setDestinationCalendar}
+            isActivated={isZoomActivated}
+            onToggleActivation={() => setIsZoomActivated(prevState => !prevState)}
+            existingMeetings={zoomMeetings}
+            draftEvent={draftEvent}
+          />
+
 
           {/* You can continue with other components or form fields here */}
         </form>
@@ -68,7 +86,10 @@ export default function Page({ events, googleCalendarDetails }: IndexProps) {
 }
 
 export async function getServerSideProps() {
-  const events = await fetchEvents();
+  const googleCalendarEvents = await fetchEvents();
   const googleCalendarDetails = await fetchCalendarDetails();
-  return { props: { events, googleCalendarDetails } };
+  const zoomAccounts: ZoomAccount[] = await getLicensedUsers();
+  const zoomMeetings: ZoomMeeting[] = await getAllUserMeetings(zoomAccounts);
+
+  return { props: { googleCalendarEvents, googleCalendarDetails, zoomAccounts, zoomMeetings } };
 }

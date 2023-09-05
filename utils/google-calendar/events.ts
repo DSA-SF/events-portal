@@ -1,9 +1,9 @@
-import { GoogleCalendarEvent } from './types';
-import { CalendarEvent } from "../../model/event";
+import { GoogleCalendarApiEvent } from './types';
+import { CalendarEvent, GoogleCalendarEvent } from "../../model/event";
 import { calendar } from './calendar'; // Adjust this import path if needed
 import { DateTime } from 'luxon';
 
-export const fetchEvents: () => Promise<(CalendarEvent & { source: 'google-calendar' })[]> = async () => {
+export const fetchEvents: () => Promise<GoogleCalendarEvent[]> = async () => {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -24,14 +24,14 @@ export const fetchEvents: () => Promise<(CalendarEvent & { source: 'google-calen
 
   const eventResults = await Promise.all(eventFetchPromises);
 
-  const allEvents: GoogleCalendarEvent[] = eventResults.reduce((acc: any[], eventResult: any) => {
+  const allEvents: GoogleCalendarApiEvent[] = eventResults.reduce((acc: any[], eventResult: any) => {
     return acc.concat(eventResult.data.items || []);
   }, [] as any[]);
 
-  const customEvents: (CalendarEvent & { source: 'google-calendar' })[] = allEvents.map(event => ({
+  const customEvents: GoogleCalendarEvent[] = allEvents.map(event => ({
     id: event.id,
     title: event.summary,
-    calendarName: event.organizer.displayName,
+    calendarId: event.organizer.id,
     startTime: DateTime.fromISO(event.start.dateTime).toJSDate(),
     endTime: DateTime.fromISO(event.end.dateTime).toJSDate(),
     source: 'google-calendar',
