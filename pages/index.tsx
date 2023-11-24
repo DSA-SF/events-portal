@@ -91,5 +91,5 @@ export async function getServerSideProps() {
   const zoomAccounts: ZoomAccount[] = await getLicensedUsers();
   const zoomMeetings: ZoomMeeting[] = await getAllUserMeetings(zoomAccounts);
 
-  return { props: { googleCalendarEvents, googleCalendarDetails, zoomAccounts, zoomMeetings } };
+  return JSON.parse(JSON.stringify({ props: { googleCalendarEvents, googleCalendarDetails, zoomAccounts, zoomMeetings } }));
 }
