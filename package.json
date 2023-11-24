@@ -9,6 +9,7 @@
     "update-google-credential": "npx @digitak/esrun scripts/update-google-credential.ts"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^3.3.0",
     "@fullcalendar/common": "^5.11.5",
     "@fullcalendar/core": "^6.1.8",
     "@fullcalendar/interaction": "^6.1.8",
