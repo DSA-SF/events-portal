@@ -1,12 +1,12 @@
 # Base container for simple commands
-FROM --platform=linux/amd64 node:16-alpine AS base
+FROM --platform=linux/amd64 node:18-alpine AS base
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY . .
 
 # Install deps
-FROM --platform=linux/amd64 node:16-alpine AS deps
+FROM --platform=linux/amd64 node:18-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json yarn.lock* ./
@@ -14,7 +14,7 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # Create production build
-FROM --platform=linux/amd64 node:16-alpine AS build
+FROM --platform=linux/amd64 node:18-alpine AS build
 WORKDIR /app
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
@@ -28,7 +28,7 @@ RUN curl -sfL https://gobinaries.com/tj/node-prune | bash -s -- -b /usr/local/bi
 RUN /usr/local/bin/node-prune
 
 # Production Image
-FROM --platform=linux/amd64 node:16-alpine AS production
+FROM --platform=linux/amd64 node:18-alpine AS production
 WORKDIR /app
 
 ENV NODE_ENV=production
