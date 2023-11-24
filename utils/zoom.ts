@@ -55,15 +55,18 @@ export const getAllUserMeetings = async (licensedUsers: ZoomAccount[]) => {
         const { start_time, duration, agenda, topic } = m;
         return {
           id: m.id || "UNKNOWN_ID",
-          startTime: !!start_time ? new Date(start_time) : null,
-          endTime: !!start_time && DateTime.fromISO(start_time).plus({ minutes: (duration || 60) }).toJSDate(),
+          startTime: !!start_time ? new Date(start_time) : new Date(), // HACK: Fix types to return a partial ZoomMeeting
+          endTime: DateTime.fromISO(start_time || "").plus({ minutes: (duration || 60) }).toJSDate(),
           agenda: agenda || "Agenda N/A",
           topic: topic || "Untitled",
+          title: topic || "Untitled",
           account: `${accountName}`,
+          zoomAccountId: accountName,
           meetingType: m.type || "unknown",
-        };
+          source: "zoom",
+        } as ZoomMeeting;
       })
-      .filter((m): m is SomeAreRequired<ZoomMeeting, 'startTime'> => !!m.startTime)
+      .filter((m) => !!m.startTime)
   };
 
   const meetings = await pMap(licensedUsers, getUserMeetings, { concurrency: 4 });

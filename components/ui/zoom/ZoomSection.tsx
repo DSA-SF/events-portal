@@ -25,15 +25,27 @@ const ZoomSection: React.FC<ZoomSectionProps> = ({
   onDestinationAccountChange,
   isActivated,
   onToggleActivation,
-  existingMeetings,
+  existingMeetings: existingEvents,
   draftEvent,
   additionalStyles = "",
 }) => {
-  const draftIsDisplayable = draftEvent && draftEvent.title && draftEvent.startTime && draftEvent.endTime;
-  type DisplayableEvent = (Partial<CalendarEvent> & { source: 'draft' }) | (CalendarEvent & { source: 'zoom' });
-  const allEvents =
-    (draftIsDisplayable ? ([draftEvent] as Partial<CalendarEvent>[]).concat(existingMeetings) : existingMeetings) as DisplayableEvent[]
+  const renderEvents = existingEvents.map(event => ({
+    id: event.id,
+    start: event.startTime,
+    end: event.endTime,
+    title: event.title,
+    color: getColorForEvent('zoom', destinationAccountId || 'default'),
+  }));
 
+  if (draftEvent && draftEvent.title && draftEvent.startTime && draftEvent.endTime) {
+    renderEvents.push({
+      id: 'DRAFT',
+      start: draftEvent.startTime,
+      end: draftEvent.endTime,
+      title: draftEvent.title,
+      color: newEventColor,
+    })
+  }
   const accountsById = _.keyBy(accounts, 'id');
 
   return (
@@ -61,26 +73,12 @@ const ZoomSection: React.FC<ZoomSectionProps> = ({
           <FullCalendar
             plugins={[timeGridPlugin]}
             initialView="timeGridWeek"
-            events={allEvents}
+            events={renderEvents}
             allDaySlot={false}
             contentHeight={300}
             slotDuration="00:30:00"
             slotLabelInterval="01:00:00"
             scrollTime="12:00:00"
-            eventDataTransform={(eventData: DisplayableEvent) => (
-              eventData.source === 'draft' ? {
-                id: 'DRAFT',
-                start: eventData.startTime,
-                end: eventData.endTime,
-                title: eventData.title,
-                color: newEventColor,
-              } : {
-                id: eventData.id,
-                start: eventData.startTime,
-                end: eventData.endTime,
-                title: eventData.title,
-                color: getColorForEvent('zoom', eventData.zoomAccountName || 'default'),
-              })}
           />
         </div>
       </div>

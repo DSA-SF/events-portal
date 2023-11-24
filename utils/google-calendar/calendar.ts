@@ -18,10 +18,10 @@ const { client_email, private_key } = credentials;
 // Initialize auth object
 const auth = new google.auth.JWT(
   client_email,
-  null,
+  undefined,
   private_key,
   ['https://www.googleapis.com/auth/calendar'],
-  null
+  undefined
 );
 
 // Initialize and export Google Calendar API client
@@ -85,7 +85,7 @@ export async function fetchCalendarDetailsById(calendarIds: string[]): Promise<R
 }
 
 export async function fetchCalendarDetails(): Promise<Record<string, CalendarDetails>> {
-  if (!process.env.GOOGLE_CALENDAR_IDS || process.env.GOOGLE_CALENDAR_IDS.split(',') === 0) {
+  if (!process.env.GOOGLE_CALENDAR_IDS || process.env.GOOGLE_CALENDAR_IDS.split(',').length === 0) {
     return {}
   }
   return fetchCalendarDetailsById(process.env.GOOGLE_CALENDAR_IDS.split(','))
