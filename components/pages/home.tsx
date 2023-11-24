@@ -1,22 +1,23 @@
+"use client"
 import React, { useEffect, useState } from 'react';
-import UIPage from "../components/ui/page";
-import EventPrimaryFields from '../components/ui/EventPrimaryFields';
-import GoogleCalendarSection from '../components/ui/google-calendar/GoogleCalendarSection';
-import { fetchEvents } from '../utils/google-calendar/events';
-import { CalendarEvent, GoogleCalendarEvent, ZoomMeeting } from "../model/event";
+import UIPage from "../ui/page";
+import EventPrimaryFields from '../ui/EventPrimaryFields';
+import GoogleCalendarSection from '../ui/google-calendar/GoogleCalendarSection';
+import { fetchEvents } from '../../utils/google-calendar/events';
+import { CalendarEvent, GoogleCalendarEvent } from "../../model/event";
 import { DateTime } from 'luxon';
-import { CalendarDetails, fetchCalendarDetails } from '../utils/google-calendar/calendar';
-import { ZoomAccount, getAllUserMeetings, getLicensedUsers } from '../utils/zoom';
-import ZoomSection from '../components/ui/zoom/ZoomSection';
+import { CalendarDetails, fetchCalendarDetails } from '../../utils/google-calendar/calendar';
+import { ZoomAccount, ZoomMeeting, getAllUserMeetings, getLicensedUsers } from '../../utils/zoom';
+import ZoomSection from '../ui/zoom/ZoomSection';
 
-interface IndexProps {
+interface HomeProps {
   googleCalendarEvents: GoogleCalendarEvent[];
   googleCalendarDetails: CalendarDetails[];
   zoomAccounts: ZoomAccount[];
   zoomMeetings: ZoomMeeting[];
 }
 
-export default function Page({ googleCalendarEvents, googleCalendarDetails, zoomAccounts, zoomMeetings }: IndexProps) {
+export default function Home({ googleCalendarEvents, googleCalendarDetails, zoomAccounts, zoomMeetings }: HomeProps) {
   const [eventName, setEventName] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(
     DateTime.now().plus({ days: 5 }).set({ hour: 18, minute: 0, second: 0 }).setZone('America/Los_Angeles').toJSDate()
@@ -83,13 +84,4 @@ export default function Page({ googleCalendarEvents, googleCalendarDetails, zoom
       </UIPage.Body>
     </UIPage>
   )
-}
-
-export async function getServerSideProps() {
-  const googleCalendarEvents = await fetchEvents();
-  const googleCalendarDetails = await fetchCalendarDetails();
-  const zoomAccounts: ZoomAccount[] = await getLicensedUsers();
-  const zoomMeetings: ZoomMeeting[] = await getAllUserMeetings(zoomAccounts);
-
-  return JSON.parse(JSON.stringify({ props: { googleCalendarEvents, googleCalendarDetails, zoomAccounts, zoomMeetings } }));
 }

@@ -4,7 +4,6 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { useRouter } from "next/router";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import classNames from "classnames";
-import { useSession } from "next-auth/react";
 import logoWhiteBg from "../../images/dsa-logo-white-bg.png";
 
 const navigation = [{ name: "Zoom", href: "/" }];
@@ -20,7 +19,9 @@ const isPathCurrent = (asPath: string) => (path: string) => {
 
 export default function Nav() {
   const { asPath } = useRouter();
-  const { data: session } = useSession();
+  // TODO: update when auth0 fixed
+  // const { data: session } = useSession();
+  let session = {};
   const isLinkActive = isPathCurrent(asPath);
 
   return (
