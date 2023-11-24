@@ -5,12 +5,12 @@ import redis from '../redis';
 // Load base64 encoded credentials from .env
 const credentialsBase64 = process.env.GOOGLE_CALENDAR_CREDENTIAL_BASE64;
 
-if (!credentialsBase64) {
+if (typeof window !== 'undefined' && !credentialsBase64) {
   throw new Error('The GOOGLE_CALENDAR_CREDENTIAL_BASE64 environment variable is not set.');
 }
 
 // Decode and parse credentials
-const credentials = JSON.parse(Buffer.from(credentialsBase64, 'base64').toString('utf-8'));
+const credentials = !!credentialsBase64 && JSON.parse(Buffer.from(credentialsBase64, 'base64').toString('utf-8'));
 
 // Extract necessary fields
 const { client_email, private_key } = credentials;
