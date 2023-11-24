@@ -1,0 +1,56 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//-/g')" >> $GITHUB_ENV
+
+    - name: Set an environment variable
+      shell: bash
+      run: echo "APP_NAME=events-portal" >> $GITHUB_ENV && echo "ORG_NAME=dsa-sf" >> $GITHUB_ENV
+
+    - name: Build and push for branch
+      if: github.ref != 'refs/heads/main'
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: Dockerfile
+        push: true
+        tags: ghcr.io/${{ env.ORG_NAME }}/${{env.APP_NAME}}:${{ env.BRANCH_NAME }}
+        platforms: linux/amd64,linux/arm64/v8
+
+    - name: Build and push main as latest tag
+      if: github.ref == 'refs/heads/main'
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: Dockerfile
+        push: true
+        tags: ghcr.io/${{ env.ORG_NAME }}/${{env.APP_NAME}}:latest
+        platforms: linux/amd64,linux/arm64/v8
