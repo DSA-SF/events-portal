@@ -1,8 +1,7 @@
-import { NextApiRequest } from 'next';
 import { NextResponse } from 'next/server';
 import { fetchEvents } from '../../../../utils/google-calendar/events';
 
-export default async function GET(req: NextApiRequest) {
+export async function GET() {
   try {
     const customEvents = await fetchEvents();
     NextResponse.json({ events: customEvents });
