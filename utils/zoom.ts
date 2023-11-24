@@ -1,3 +1,4 @@
+"use server";
 import zoomApi from "zoomapi";
 import redis from "./redis";
 import { DateTime } from "luxon";

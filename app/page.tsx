@@ -1,4 +1,4 @@
-
+"use client";
 import Home from "../components/pages/home";
 import EventPrimaryFields from '../components/ui/EventPrimaryFields';
 import GoogleCalendarSection from '../components/ui/google-calendar/GoogleCalendarSection';
@@ -9,27 +9,21 @@ import { CalendarDetails, fetchCalendarDetails } from '../utils/google-calendar/
 import { ZoomAccount, getAllUserMeetings, getLicensedUsers } from '../utils/zoom';
 import ZoomSection from '../components/ui/zoom/ZoomSection';
 
-// interface IndexProps {
-//   googleCalendarEvents: GoogleCalendarEvent[];
-//   googleCalendarDetails: CalendarDetails[];
-//   zoomAccounts: ZoomAccount[];
-//   zoomMeetings: ZoomMeeting[];
-// }
-
-export default async function Page() {
-
-  const pageData: any = await fetchData();
-
-  if (pageData) {
-    return <Home {...pageData}/>
-  }
-
-  return 'loading...';
+interface IndexProps {
+  googleCalendarEvents: GoogleCalendarEvent[];
+  googleCalendarDetails: CalendarDetails[];
+  zoomAccounts: ZoomAccount[];
+  zoomMeetings: ZoomMeeting[];
 }
 
-async function fetchData () {
+export default async function Page() {
+  const pageData = await fetchData();
+    return <Home {...pageData}/>
+}
+
+async function fetchData(): Promise<IndexProps> {
   const googleCalendarEvents = await fetchEvents();
-  const googleCalendarDetails = await fetchCalendarDetails();
+  const googleCalendarDetails: CalendarDetails[] = [];//await fetchCalendarDetails();
   const zoomAccounts: ZoomAccount[] = await getLicensedUsers();
   const zoomMeetings: ZoomMeeting[] = await getAllUserMeetings(zoomAccounts);
 

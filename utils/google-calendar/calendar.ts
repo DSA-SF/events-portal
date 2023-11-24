@@ -1,3 +1,4 @@
+"use server";
 import { google } from 'googleapis';
 import { Buffer } from 'buffer';
 import redis from '../redis';
