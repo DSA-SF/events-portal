@@ -3,11 +3,11 @@ import React, { useEffect, useState } from 'react';
 import UIPage from "../ui/page";
 import EventPrimaryFields from '../ui/EventPrimaryFields';
 import GoogleCalendarSection from '../ui/google-calendar/GoogleCalendarSection';
-import { fetchEvents } from '../../utils/google-calendar/events';
-import { CalendarEvent, GoogleCalendarEvent } from "../../model/event";
+import { fetchEvents,  } from '../../utils/google-calendar/events';
+import { CalendarEvent, GoogleCalendarEvent, ZoomMeeting } from "../../model/event";
 import { DateTime } from 'luxon';
 import { CalendarDetails, fetchCalendarDetails } from '../../utils/google-calendar/calendar';
-import { ZoomAccount, ZoomMeeting, getAllUserMeetings, getLicensedUsers } from '../../utils/zoom';
+import { ZoomAccount, getAllUserMeetings, getLicensedUsers } from '../../utils/zoom';
 import ZoomSection from '../ui/zoom/ZoomSection';
 
 interface HomeProps {

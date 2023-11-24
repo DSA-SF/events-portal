@@ -21,7 +21,7 @@ export default function Nav() {
   const { asPath } = useRouter();
   // TODO: update when auth0 fixed
   // const { data: session } = useSession();
-  let session = {};
+  let session: any = {};
   const isLinkActive = isPathCurrent(asPath);
 
   return (
