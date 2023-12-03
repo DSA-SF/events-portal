@@ -19,6 +19,7 @@ import {
   getLicensedUsers,
 } from '../utils/zoom';
 import ZoomSection from '../components/ui/zoom/ZoomSection';
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
 interface IndexProps {
   googleCalendarEvents: GoogleCalendarEvent[];
@@ -27,10 +28,12 @@ interface IndexProps {
   zoomMeetings: ZoomMeeting[];
 }
 
-export default async function Page() {
+async function Page() {
   const pageData = await fetchData();
   return <Home {...pageData} />;
 }
+
+export default withPageAuthRequired(Page);
 
 async function fetchData(): Promise<IndexProps> {
   const googleCalendarEvents = await fetchGoogleCalendarEvents();

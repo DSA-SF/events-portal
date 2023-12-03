@@ -9,6 +9,7 @@ import { DateTime } from 'luxon';
 import { GoogleCalendarDetails, fetchGoogleCalendarDetails } from '../../utils/google-calendar/calendar';
 import { ZoomAccount, getAllUserMeetings, getLicensedUsers } from '../../utils/zoom';
 import ZoomSection from '../ui/zoom/ZoomSection';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 interface HomeProps {
   googleCalendarEvents: GoogleCalendarEvent[];
@@ -18,6 +19,7 @@ interface HomeProps {
 }
 
 export default function Home({ googleCalendarEvents, googleCalendarDetails, zoomAccounts, zoomMeetings }: HomeProps) {
+  const { user, error, isLoading } = useUser();
   const [eventName, setEventName] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(
     DateTime.now().plus({ days: 5 }).set({ hour: 18, minute: 0, second: 0 }).setZone('America/Los_Angeles').toJSDate()
@@ -43,6 +45,7 @@ export default function Home({ googleCalendarEvents, googleCalendarDetails, zoom
   return (
     <UIPage>
       <UIPage.Body>
+        <div>{user && <span>Signed in as {user?.email}</span>}</div>
         {/* Form */}
         <form>
           <EventPrimaryFields
