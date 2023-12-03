@@ -1,6 +1,7 @@
+"use server";
 import { google } from 'googleapis';
 import { Buffer } from 'buffer';
-import redis from '../redis';
+import {getRedisClient }from '../redis';
 
 // Load base64 encoded credentials from .env
 const credentialsBase64 = process.env.GOOGLE_CALENDAR_CREDENTIAL_BASE64;
@@ -25,9 +26,13 @@ const auth = new google.auth.JWT(
 );
 
 // Initialize and export Google Calendar API client
-export const calendar = google.calendar({ version: 'v3', auth });
+const calendar = google.calendar({ version: 'v3', auth });
 
-export interface CalendarDetails {
+export async function getGoogleCalendarClient() {
+  return calendar;
+}
+
+export interface GoogleCalendarDetails {
   id: string;
   name: string;
   accessRole: 'reader' | 'writer' | 'owner' | 'none';
@@ -37,8 +42,9 @@ async function insertCalendarToAccountCalendarList(calendarId: string) {
   await calendar.calendarList.insert({ requestBody: { id: calendarId } })
 }
 
-export async function fetchCalendarDetailsById(calendarIds: string[]): Promise<Record<string, CalendarDetails>> {
-  const calendarDetails: Record<string, CalendarDetails> = {};
+export async function fetchGoogleCalendarDetailsById(calendarIds: string[]): Promise<Record<string, GoogleCalendarDetails>> {
+  const redis = await getRedisClient();
+  const calendarDetails: Record<string, GoogleCalendarDetails> = {};
 
 
   // Check Redis for cached details
@@ -63,7 +69,7 @@ export async function fetchCalendarDetailsById(calendarIds: string[]): Promise<R
         // Re-adding an existing calendar has no effect, so we do it
         await insertCalendarToAccountCalendarList(id);
         const res = await calendar.calendarList.get({ calendarId: id });
-        const details: CalendarDetails = {
+        const details: GoogleCalendarDetails = {
           id: res.data.id || id,
           name: res.data.summary || 'No Name',
           accessRole: (res.data.accessRole as any) || 'none',
@@ -84,9 +90,9 @@ export async function fetchCalendarDetailsById(calendarIds: string[]): Promise<R
   return calendarDetails;
 }
 
-export async function fetchCalendarDetails(): Promise<Record<string, CalendarDetails>> {
+export async function fetchGoogleCalendarDetails(): Promise<Record<string, GoogleCalendarDetails>> {
   if (!process.env.GOOGLE_CALENDAR_IDS || process.env.GOOGLE_CALENDAR_IDS.split(',').length === 0) {
     return {}
   }
-  return fetchCalendarDetailsById(process.env.GOOGLE_CALENDAR_IDS.split(','))
+  return fetchGoogleCalendarDetailsById(process.env.GOOGLE_CALENDAR_IDS.split(','))
 }

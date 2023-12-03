@@ -4,10 +4,10 @@ import { CalendarEvent, CalendarableEvent, DraftEvent, GoogleCalendarEvent } fro
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import { getColorForEvent, newEventColor } from '../colors';
-import { CalendarDetails } from '../../../utils/google-calendar/calendar';
+import { GoogleCalendarDetails } from '../../../utils/google-calendar/calendar';
 
 interface GoogleCalendarSectionProps {
-  calendarDetails: CalendarDetails[];
+  calendarDetails: GoogleCalendarDetails[];
   destinationCalendarId?: string;
   onDestinationCalendarChange: (value: string) => void;
   isActivated: boolean;

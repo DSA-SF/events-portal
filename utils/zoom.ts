@@ -1,5 +1,6 @@
+"use server";
 import zoomApi from "zoomapi";
-import redis from "./redis";
+import {getRedisClient} from "./redis";
 import { DateTime } from "luxon";
 import pMap from "p-map";
 import { ZoomMeeting } from "../model/event";
@@ -10,13 +11,18 @@ export interface ZoomAccount {
   email: string;
 }
 
-export const zoom = zoomApi({
+const zoom = zoomApi({
   accountId: process.env.ZOOM_ACCOUNT_ID || "MISSING",
   oauthClientId: process.env.ZOOM_CLIENT_ID || "MISSING",
   oauthClientSecret: process.env.ZOOM_CLIENT_SECRET || "MISSING",
 });
 
+export const getZoomClient = async () => {
+  return zoom;
+}
+
 export const getLicensedUsers = async (): Promise<ZoomAccount[]> => {
+  const redis = await getRedisClient();
   let licensedUsersCache = await redis.get("zoomLicensedUsers");
   if (licensedUsersCache) {
     return JSON.parse(licensedUsersCache);
@@ -40,11 +46,11 @@ export const getLicensedUsers = async (): Promise<ZoomAccount[]> => {
 };
 
 export const getAllUserMeetings = async (licensedUsers: ZoomAccount[]) => {
+  const redis = await getRedisClient();
   let allUserMeetings = await redis.get("zoomAllUserMeetings");
   if (allUserMeetings) {
     return JSON.parse(allUserMeetings);
   }
-
   const getUserMeetings = async ({ id, name: accountName }: ZoomAccount): Promise<ZoomMeeting[]> => {
     const response = await zoom.meetings.ListMeetings(id, { type: "upcoming", page_size: 300 });
 
