@@ -46,6 +46,7 @@
     "@types/react": "^18.2.21",
     "eslint": "^8.47.0",
     "eslint-config-next": "^13.4.19",
+    "prettier": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "ts-node": "^10.9.1",

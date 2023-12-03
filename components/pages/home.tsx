@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import UIPage from "../ui/page";
 import EventPrimaryFields from '../ui/EventPrimaryFields';
 import GoogleCalendarSection from '../ui/google-calendar/GoogleCalendarSection';
-import { fetchEvents,  } from '../../utils/google-calendar/events';
+import { fetchGoogleCalendarEvents,  } from '../../utils/google-calendar/events';
 import { CalendarEvent, GoogleCalendarEvent, ZoomMeeting } from "../../model/event";
 import { DateTime } from 'luxon';
 import { GoogleCalendarDetails, fetchGoogleCalendarDetails } from '../../utils/google-calendar/calendar';

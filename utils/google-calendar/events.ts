@@ -3,7 +3,7 @@ import { CalendarEvent, GoogleCalendarEvent } from "../../model/event";
 import { getGoogleCalendarClient } from './calendar'; // Adjust this import path if needed
 import { DateTime } from 'luxon';
 
-export const fetchEvents: () => Promise<GoogleCalendarEvent[]> = async () => {
+export const fetchGoogleCalendarEvents: () => Promise<GoogleCalendarEvent[]> = async () => {
   const calendar = await getGoogleCalendarClient();
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
