@@ -6,13 +6,13 @@ import GoogleCalendarSection from '../ui/google-calendar/GoogleCalendarSection';
 import { fetchEvents,  } from '../../utils/google-calendar/events';
 import { CalendarEvent, GoogleCalendarEvent, ZoomMeeting } from "../../model/event";
 import { DateTime } from 'luxon';
-import { CalendarDetails, fetchCalendarDetails } from '../../utils/google-calendar/calendar';
+import { GoogleCalendarDetails, fetchGoogleCalendarDetails } from '../../utils/google-calendar/calendar';
 import { ZoomAccount, getAllUserMeetings, getLicensedUsers } from '../../utils/zoom';
 import ZoomSection from '../ui/zoom/ZoomSection';
 
 interface HomeProps {
   googleCalendarEvents: GoogleCalendarEvent[];
-  googleCalendarDetails: CalendarDetails[];
+  googleCalendarDetails: GoogleCalendarDetails[];
   zoomAccounts: ZoomAccount[];
   zoomMeetings: ZoomMeeting[];
 }
