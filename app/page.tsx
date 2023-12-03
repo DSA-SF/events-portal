@@ -1,4 +1,4 @@
-"use client";
+"use server";
 import Home from "../components/pages/home";
 import EventPrimaryFields from '../components/ui/EventPrimaryFields';
 import GoogleCalendarSection from '../components/ui/google-calendar/GoogleCalendarSection';
@@ -16,14 +16,14 @@ interface IndexProps {
   zoomMeetings: ZoomMeeting[];
 }
 
-export default async function Page() {
+export default  async function Page() {
   const pageData = await fetchData();
     return <Home {...pageData}/>
 }
 
 async function fetchData(): Promise<IndexProps> {
   const googleCalendarEvents = await fetchEvents();
-  const googleCalendarDetails: CalendarDetails[] = [];//await fetchCalendarDetails();
+  const googleCalendarDetails: any = [];//await fetchCalendarDetails();
   const zoomAccounts: ZoomAccount[] = await getLicensedUsers();
   const zoomMeetings: ZoomMeeting[] = await getAllUserMeetings(zoomAccounts);
 

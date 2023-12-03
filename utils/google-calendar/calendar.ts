@@ -1,7 +1,7 @@
 "use server";
 import { google } from 'googleapis';
 import { Buffer } from 'buffer';
-import redis from '../redis';
+import {getRedisClient }from '../redis';
 
 // Load base64 encoded credentials from .env
 const credentialsBase64 = process.env.GOOGLE_CALENDAR_CREDENTIAL_BASE64;
@@ -26,7 +26,11 @@ const auth = new google.auth.JWT(
 );
 
 // Initialize and export Google Calendar API client
-export const calendar = google.calendar({ version: 'v3', auth });
+const calendar = google.calendar({ version: 'v3', auth });
+
+export async function getGoogleCalendarClient() {
+  return calendar;
+}
 
 export interface CalendarDetails {
   id: string;
@@ -39,6 +43,7 @@ async function insertCalendarToAccountCalendarList(calendarId: string) {
 }
 
 export async function fetchCalendarDetailsById(calendarIds: string[]): Promise<Record<string, CalendarDetails>> {
+  const redis = await getRedisClient();
   const calendarDetails: Record<string, CalendarDetails> = {};
 
 
