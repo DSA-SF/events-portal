@@ -12,7 +12,7 @@ export const newEventColor = '#19BBFF';
 let usedColors: Record<string, Set<string>> = {};
 let eventTypeAndNameToColor: Record<string, Record<string, string>> = {};
 
-export function getColorForEvent(entryType: 'zoom' | 'google-calendar', entry: string): string {
+export function getColorForEvent(entryType: 'zoom' | 'google-calendar' | 'action-network', entry: string): string {
   if (!eventTypeAndNameToColor[entryType]) {
     eventTypeAndNameToColor[entryType] = {};
   }
