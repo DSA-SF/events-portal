@@ -10,11 +10,11 @@ import { GoogleCalendarDetails } from '../../../utils/google-calendar/calendar';
 
 interface ActionNetworkCalendarProps {
   calendarDetails: GoogleCalendarDetails[];
-  destinationCalendarId?: string;
-  onDestinationCalendarChange: (value: string) => void;
+  destinationCalendarId?: any;
+  onDestinationCalendarChange: (value: any) => void;
   isActivated: boolean;
   onToggleActivation: () => void;
-  additionalStyles?: string;
+  additionalStyles?: any;
   existingEvents: OsdiEvent[];
   draftEvent?: DraftEvent;
 }

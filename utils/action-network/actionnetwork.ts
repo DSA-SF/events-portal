@@ -3,10 +3,11 @@ interface RequestOptions {
   headers?: Record<string, string>;
   body?: string | FormData;
   // Add any other options you might need
+  endpoint: string;
 }
 
-export async function makeRequest<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const url = `https://api.actionnetwork.org/api/v2/events/`;
+export async function makeRequest<T>(endpoint: any, options: RequestOptions = {endpoint}): Promise<T> {
+  const url = `https://api.actionnetwork.org/api/v2/events/` + endpoint;
   const response = await fetch(url, options);
 
   if (!response.ok) {
