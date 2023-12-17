@@ -21,16 +21,20 @@ import {
 } from '../../utils/zoom';
 import ZoomSection from '../ui/zoom/ZoomSection';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import ActionNetworkSection from '../ui/action-network/ActionNetorkSection';
-import { ActionNetwork, OsdiEvent } from '../../utils/action-network/actionNetworkInterface';
 
 interface HomeProps {
   googleCalendarEvents: GoogleCalendarEvent[];
   googleCalendarDetails: GoogleCalendarDetails[];
   zoomAccounts: ZoomAccount[];
   zoomMeetings: ZoomMeeting[];
-  actionNetworkEvents: OsdiEvent[];
 }
+
+export default function Home({
+  googleCalendarEvents,
+  googleCalendarDetails,
+  zoomAccounts,
+  zoomMeetings,
+}: HomeProps) {
   const { user, error, isLoading } = useUser();
   const [eventName, setEventName] = useState<string>('');
   const [startTime, setStartTime] = useState<Date>(
@@ -159,15 +163,6 @@ interface HomeProps {
               setIsZoomActivated((prevState) => !prevState)
             }
             existingMeetings={zoomMeetings}
-            draftEvent={draftEvent}
-          />
-          <ActionNetworkSection
-            calendarDetails={googleCalendarDetails}
-            destinationCalendarId={destinationCalendar}
-            onDestinationCalendarChange={setDestinationCalendar}
-            isActivated={isGoogleCalendarActivated}
-            onToggleActivation={() => setIsGoogleCalendarActivated(prevState => !prevState)}
-            existingEvents={actionNetworkEvents}
             draftEvent={draftEvent}
           />
 
