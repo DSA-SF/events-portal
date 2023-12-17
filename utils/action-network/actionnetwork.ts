@@ -6,15 +6,21 @@ interface RequestOptions {
   endpoint: string;
 }
 
-export async function makeRequest<T>(endpoint: any, options: RequestOptions = {endpoint}): Promise<T> {
-  const url = `https://api.actionnetwork.org/api/v2/events/` + endpoint;
-  const response = await fetch(url, options);
+export async function makeRequest(endpoint: string) {
+  const url = `https://actionnetwork.org/api/v2/events?action_network:` + endpoint;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: { contentType: 'application/json', 'OSDI-API-Token': process.env.ACTION_NETWORK_KEY||'' },
+  });
+  console.log(url);
+  const responseJson = await response.json();
 
   if (!response.ok) {
+    console.log(responseJson);
     throw new Error(`Request failed with status ${response.status}`);
   }
 
-  return response.json();
+  return responseJson['_embedded']['osdi:events'][0];
 }
 
 export default makeRequest;
